@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Flow Quiz</title>
+    <style>
+        body { font-family: sans-serif; background: #fdf2f2; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .container { position: relative; max-width: 900px; width: 100%; border: 3px solid #e74c3c; border-radius: 15px; overflow: hidden; background: white; }
+        
+        /* Labels Store */
+        .bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 20px; background: #fff; border-bottom: 2px solid #eee; width: 100%; box-sizing: border-box; }
+        .label { padding: 10px 15px; background: #fff; border: 2px solid #e74c3c; color: #e74c3c; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .label.selected { background: #e74c3c; color: #white; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); color: white; }
+
+        /* Game Board */
+        #canvas-area { position: relative; width: 100%; }
+        #heart-img { width: 100%; display: block; }
+
+        /* Drop Zones (Adjust these % values if you change the image) */
+        .drop-zone { 
+            position: absolute; 
+            border: 2px dashed #ff9a9e; 
+            background: rgba(255, 255, 255, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold; cursor: pointer;
+            border-radius: 5px; text-align: center;
+        }
+        .drop-zone.correct { background: #55efc4 !important; border: 2px solid #00b894 !important; color: #006266 !important; }
+
+        /* Coordinate Positions for image_a01ad4.png */
+        .z1 { top: 22%; left: 5%; width: 22%; height: 8%; }  /* Brachiocephalic */
+        .z2 { top: 45%; left: 2%; width: 20%; height: 8%; }  /* Right Atrium */
+        .z3 { top: 78%; left: 10%; width: 20%; height: 8%; } /* Left Atrium (Bottom) */
+        .z4 { top: 18%; left: 72%; width: 22%; height: 8%; } /* Pulmonary Truck */
+        .z5 { top: 35%; left: 72%; width: 20%; height: 8%; } /* Left Atrium */
+        .z6 { top: 60%; left: 72%; width: 20%; height: 8%; } /* Left Ventricle */
+        .z7 { top: 80%; left: 72%; width: 22%; height: 8%; } /* Top of Heart */
+
+        #status { margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+
+    <h2>Human Heart Diagram Game</h2>
+    <p>1. Naam chunein | 2. Khali box par click karein</p>
+
+    <div class="bank">
+        <div class="label" onclick="sel(this, 'z1')">The right brachiocephalic vein</div>
+        <div class="label" onclick="sel(this, 'z4')">Pulmonary Truck</div>
+        <div class="label" onclick="sel(this, 'z2')">Right Atrium</div>
+        <div class="label" onclick="sel(this, 'z5')">Left Atrium</div>
+        <div class="label" onclick="sel(this, 'z6')">Left Ventricle</div>
+        <div class="label" onclick="sel(this, 'z7')">Top of the Heart</div>
+    </div>
+
+    <div class="container">
+        <div id="canvas-area">
+            <!-- Image name exactly as uploaded to GitHub -->
+            <img id="heart-img" src="heart_blank.png" alt="Error: heart_blank.png missing in folder!" onerror="alert('Image file not found!')">
+            
+            <div class="drop-zone z1" onclick="check('z1', this)">?</div>
+            <div class="drop-zone z2" onclick="check('z2', this)">?</div>
+            <div class="drop-zone z3" onclick="check('z5', this)">?</div> <!-- Matching Left Atrium logic -->
+            <div class="drop-zone z4" onclick="check('z4', this)">?</div>
+            <div class="drop-zone z5" onclick="check('z5', this)">?</div>
+            <div class="drop-zone z6" onclick="check('z6', this)">?</div>
+            <div class="drop-zone z7" onclick="check('z7', this)">?</div>
+        </div>
+    </div>
+
+    <div id="status">Taiyar? Shuru karein!</div>
+
+    <script>
+        let currentId = null;
+        let currentEl = null;
+
+        function sel(el, id) {
+            document.querySelectorAll('.label').forEach(l => l.classList.remove('selected'));
+            el.classList.add('selected');
+            currentId = id;
+            currentEl = el;
+            document.getElementById('status').innerText = "Ab box par click karein...";
+        }
+
+        function check(zoneId, box) {
+            if(!currentId) {
+                alert("Pehle upar se ek naam select karein!");
+                return;
+            }
+            if(currentId === zoneId) {
+                box.classList.add('correct');
+                box.innerText = currentEl.innerText;
+                box.onclick = null;
+                currentEl.style.visibility = 'hidden';
+                currentId = null;
+                document.getElementById('status').innerText = "Sahi Jawab! ✨";
+            } else {
+                document.getElementById('status').innerText = "Galat! Dobara koshish karein ❌";
+                document.getElementById('status').style.color = "red";
+                setTimeout(() => { document.getElementById('status').style.color = "#333"; }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
