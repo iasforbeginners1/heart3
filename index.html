@@ -3,65 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heart Flow Quiz</title>
+    <title>Human Heart Game</title>
     <style>
-        body { font-family: sans-serif; background: #fdf2f2; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .container { position: relative; max-width: 900px; width: 100%; border: 3px solid #e74c3c; border-radius: 15px; overflow: hidden; background: white; }
-        
-        /* Labels Store */
-        .bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 20px; background: #fff; border-bottom: 2px solid #eee; width: 100%; box-sizing: border-box; }
-        .label { padding: 10px 15px; background: #fff; border: 2px solid #e74c3c; color: #e74c3c; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .label.selected { background: #e74c3c; color: #white; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); color: white; }
+        :root { --red: #d63031; --green: #00b894; --dark: #2d3436; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f7f1f1; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
-        /* Game Board */
-        #canvas-area { position: relative; width: 100%; }
-        #heart-img { width: 100%; display: block; }
+        /* Screens Management */
+        .screen { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; background: #fdf2f2; z-index: 10; }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.9); }
 
-        /* Drop Zones (Adjust these % values if you change the image) */
-        .drop-zone { 
-            position: absolute; 
-            border: 2px dashed #ff9a9e; 
-            background: rgba(255, 255, 255, 0.5);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: bold; cursor: pointer;
-            border-radius: 5px; text-align: center;
-        }
-        .drop-zone.correct { background: #55efc4 !important; border: 2px solid #00b894 !important; color: #006266 !important; }
+        /* Welcome Screen */
+        #start-screen h1 { font-size: 3rem; color: var(--red); margin-bottom: 10px; }
+        .instructions { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); max-width: 400px; text-align: center; margin-bottom: 30px; }
+        .btn { padding: 15px 40px; font-size: 1.2rem; background: var(--red); color: white; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4); }
 
-        /* Coordinate Positions for image_a01ad4.png */
-        .z1 { top: 22%; left: 5%; width: 22%; height: 8%; }  /* Brachiocephalic */
-        .z2 { top: 45%; left: 2%; width: 20%; height: 8%; }  /* Right Atrium */
-        .z3 { top: 78%; left: 10%; width: 20%; height: 8%; } /* Left Atrium (Bottom) */
-        .z4 { top: 18%; left: 72%; width: 22%; height: 8%; } /* Pulmonary Truck */
-        .z5 { top: 35%; left: 72%; width: 20%; height: 8%; } /* Left Atrium */
-        .z6 { top: 60%; left: 72%; width: 20%; height: 8%; } /* Left Ventricle */
-        .z7 { top: 80%; left: 72%; width: 22%; height: 8%; } /* Top of Heart */
+        /* Game UI */
+        #game-screen { display: flex; flex-direction: column; padding: 10px; }
+        .stats { display: flex; justify-content: space-between; width: 100%; max-width: 800px; margin-bottom: 10px; font-weight: bold; font-size: 1.2rem; color: var(--dark); }
+        #timer { color: var(--red); }
 
-        #status { margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: #333; }
+        .bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 15px; background: white; border-radius: 12px; margin-bottom: 10px; width: 100%; max-width: 900px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .label { padding: 8px 12px; background: white; border: 2px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .label.selected { background: var(--red); color: white; }
+
+        .canvas-area { position: relative; width: 800px; height: 500px; background: white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid white; }
+        #heart-img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Zones (Matches image_a01ad4.png layout) */
+        .drop-zone { position: absolute; border: 2px dashed #ff9a9e; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .drop-zone.correct { background: var(--green) !important; border: 2px solid #006266 !important; color: white !important; }
+
+        /* Coordinate Adjustments */
+        .z1 { top: 22%; left: 5%; width: 22%; height: 8%; }  
+        .z2 { top: 45%; left: 2%; width: 20%; height: 8%; }  
+        .z3 { top: 78%; left: 10%; width: 20%; height: 8%; } 
+        .z4 { top: 18%; left: 72%; width: 22%; height: 8%; } 
+        .z5 { top: 35%; left: 72%; width: 20%; height: 8%; } 
+        .z6 { top: 60%; left: 72%; width: 20%; height: 8%; } 
+        .z7 { top: 80%; left: 72%; width: 22%; height: 8%; }
+
+        /* End Screen */
+        #end-screen h2 { font-size: 2.5rem; }
+        .score-text { font-size: 1.5rem; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-    <h2>Human Heart Diagram Game</h2>
-    <p>1. Naam chunein | 2. Khali box par click karein</p>
-
-    <div class="bank">
-        <div class="label" onclick="sel(this, 'z1')">The right brachiocephalic vein</div>
-        <div class="label" onclick="sel(this, 'z4')">Pulmonary Truck</div>
-        <div class="label" onclick="sel(this, 'z2')">Right Atrium</div>
-        <div class="label" onclick="sel(this, 'z5')">Left Atrium</div>
-        <div class="label" onclick="sel(this, 'z6')">Left Ventricle</div>
-        <div class="label" onclick="sel(this, 'z7')">Top of the Heart</div>
+    <!-- START SCREEN -->
+    <div id="start-screen" class="screen">
+        <h1>Human Heart Game</h1>
+        <div class="instructions">
+            <h3>Instructions</h3>
+            <p>1. Upar se ek item select karein.</p>
+            <p>2. Sahi box par click karein.</p>
+            <p>3. Aapke paas sirf <b>1 Minute</b> hai!</p>
+        </div>
+        <button class="btn" onclick="startGame()">START GAME</button>
     </div>
 
-    <div class="container">
-        <div id="canvas-area">
-            <!-- Image name exactly as uploaded to GitHub -->
-            <img id="heart-img" src="heart_blank.png" alt="Error: heart_blank.png missing in folder!" onerror="alert('Image file not found!')">
-            
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen hidden">
+        <div class="stats">
+            <div>Timer: <span id="timer">01:00</span></div>
+            <div id="msg">Shuru karein!</div>
+        </div>
+
+        <div class="bank">
+            <div class="label" id="l1" onclick="sel(this, 'z1')">The right brachiocephalic vein</div>
+            <div class="label" id="l4" onclick="sel(this, 'z4')">Pulmonary Truck</div>
+            <div class="label" id="l2" onclick="sel(this, 'z2')">Right Atrium</div>
+            <div class="label" id="l5" onclick="sel(this, 'z5')">Left Atrium</div>
+            <div class="label" id="l6" onclick="sel(this, 'z6')">Left Ventricle</div>
+            <div class="label" id="l7" onclick="sel(this, 'z7')">Top of the Heart</div>
+        </div>
+
+        <div class="canvas-area">
+            <img id="heart-img" src="heart_blank.png" alt="Heart Diagram">
             <div class="drop-zone z1" onclick="check('z1', this)">?</div>
             <div class="drop-zone z2" onclick="check('z2', this)">?</div>
-            <div class="drop-zone z3" onclick="check('z5', this)">?</div> <!-- Matching Left Atrium logic -->
+            <div class="drop-zone z3" onclick="check('z5', this)">?</div>
             <div class="drop-zone z4" onclick="check('z4', this)">?</div>
             <div class="drop-zone z5" onclick="check('z5', this)">?</div>
             <div class="drop-zone z6" onclick="check('z6', this)">?</div>
@@ -69,36 +90,80 @@
         </div>
     </div>
 
-    <div id="status">Taiyar? Shuru karein!</div>
+    <!-- END SCREEN -->
+    <div id="end-screen" class="screen hidden">
+        <h2 id="end-title">Game Over!</h2>
+        <div class="score-text" id="final-msg"></div>
+        <button class="btn" onclick="location.reload()">TRY AGAIN</button>
+    </div>
 
     <script>
+        let timeLeft = 60;
+        let timerId = null;
         let currentId = null;
         let currentEl = null;
+        let score = 0;
+        const totalItems = 6;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            startTimer();
+        }
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                timeLeft--;
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                document.getElementById('timer').innerText = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) endGame(false);
+            }, 1000);
+        }
 
         function sel(el, id) {
             document.querySelectorAll('.label').forEach(l => l.classList.remove('selected'));
             el.classList.add('selected');
             currentId = id;
             currentEl = el;
-            document.getElementById('status').innerText = "Ab box par click karein...";
         }
 
         function check(zoneId, box) {
-            if(!currentId) {
-                alert("Pehle upar se ek naam select karein!");
-                return;
-            }
+            if(!currentId) return;
+            
             if(currentId === zoneId) {
                 box.classList.add('correct');
                 box.innerText = currentEl.innerText;
                 box.onclick = null;
                 currentEl.style.visibility = 'hidden';
                 currentId = null;
-                document.getElementById('status').innerText = "Sahi Jawab! ✨";
+                score++;
+                if(score === totalItems) endGame(true);
             } else {
-                document.getElementById('status').innerText = "Galat! Dobara koshish karein ❌";
-                document.getElementById('status').style.color = "red";
-                setTimeout(() => { document.getElementById('status').style.color = "#333"; }, 1000);
+                document.getElementById('msg').innerText = "Wrong! ❌";
+                document.getElementById('msg').style.color = "red";
+                setTimeout(() => { document.getElementById('msg').innerText = ""; }, 1000);
+            }
+        }
+
+        function endGame(isWin) {
+            clearInterval(timerId);
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+            
+            const title = document.getElementById('end-title');
+            const msg = document.getElementById('final-msg');
+            
+            if(isWin) {
+                title.innerText = "You Won! 🏆";
+                title.style.color = "var(--green)";
+                msg.innerText = `Shaandaar! Aapne ${60 - timeLeft} seconds mein game pura kiya!`;
+            } else {
+                title.innerText = "Time Up! ⌛";
+                title.style.color = "var(--red)";
+                msg.innerText = `Aapne ${score} answers sahi diye. Agli baar aur tez!`;
             }
         }
     </script>
