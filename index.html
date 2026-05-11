@@ -2,206 +2,261 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heart Mastery Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Heart Flow Mastery - Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff4757; --green: #2ecc71; --dark: #0a0a0c; }
-        body { font-family: 'Exo 2', sans-serif; background: var(--dark); color: white; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-
-        /* Screen Transitions */
-        .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s ease; background: var(--dark); z-index: 10; }
-        .hidden { opacity: 0; pointer-events: none; transform: scale(0.9); }
-
-        /* Start Screen */
-        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 85%; max-width: 500px; }
-        h1 { font-size: 3rem; color: var(--red); margin: 0; text-shadow: 0 0 15px rgba(255,71,87,0.3); }
-        .btn { background: var(--red); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin-top: 25px; transition: 0.3s; }
-        .btn:disabled { background: #555; cursor: not-allowed; }
-
-        /* Game HUD */
-        .hud { display: flex; gap: 40px; margin-bottom: 15px; font-size: 1.3rem; font-weight: 900; background: rgba(255,255,255,0.1); padding: 10px 40px; border-radius: 50px; }
+        :root { --red: #ff4757; --green: #2ecc71; --dark: #0a0a0c; --glass: rgba(255, 255, 255, 0.05); }
         
-        /* Label Bank */
-        .bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 900px; margin-bottom: 20px; }
-        .chip { padding: 10px 18px; background: transparent; border: 2px solid var(--red); color: var(--red); border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .chip.active { background: var(--red); color: white; box-shadow: 0 0 15px var(--red); }
-        .chip.done { opacity: 0; pointer-events: none; }
+        body { font-family: 'Exo 2', sans-serif; background: var(--dark); color: white; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; touch-action: manipulation; }
 
-        /* Board Container */
-        .board-wrapper { position: relative; width: 900px; height: 600px; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); overflow: hidden; border: 5px solid #222; }
-        #heart-img { width: 100%; height: 100%; object-fit: contain; }
+        /* Screens Management */
+        .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s ease; background: var(--dark); z-index: 10; padding: 20px; box-sizing: border-box; }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
 
-        /* Interactive Zones */
-        .zone { position: absolute; border: 2px dashed rgba(255, 71, 87, 0.3); background: rgba(255, 255, 255, 0.6); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; font-size: 12px; color: #666; font-weight: bold; }
-        .zone:hover { background: rgba(255, 71, 87, 0.1); border-color: var(--red); }
-        .zone.filled { background: var(--green) !important; border: 2px solid #16a085 !important; color: white !important; font-size: 14px; text-align: center; }
+        /* High Priority for End Screen (Fixes Issue 2) */
+        #scr-end { z-index: 50; }
 
-        /* Coordinates (Calibrated for image_9fb95e.png) */
-        .z1 { top: 12%; left: 3%; width: 22%; height: 12%; } /* Brachiocephalic vein */
-        .z2 { top: 46%; left: 3%; width: 20%; height: 10%; } /* Right Atrium */
-        .z3 { top: 82%; left: 10%; width: 22%; height: 10%; } /* Left Atrium (Lower) */
+        /* Beautiful Glassmorphism Cards */
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.5); width: 100%; max-width: 450px; box-sizing: border-box; }
+        
+        h1 { font-size: 2.8rem; margin: 0; background: linear-gradient(to right, #ff4757, #ff6b81); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        h2 { font-size: 2.2rem; font-weight: 800; }
+
+        .instructions-list { text-align: left; background: rgba(0,0,0,0.2); padding: 15px 20px; border-radius: 12px; margin: 20px 0; font-size: 0.95rem; line-height: 1.5; color: #ccc; }
+
+        .btn { background: var(--red); color: white; border: none; padding: 15px 35px; font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 15px rgba(255,71,87,0.3); }
+        .btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(255,71,87,0.5); }
+        .btn:disabled { background: #444; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+
+        /* Game Screen Layout */
+        #scr-game { display: flex; flex-direction: column; height: 100vh; padding: 10px; }
+
+        .hud { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 800px; background: rgba(0,0,0,0.3); padding: 8px 25px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; box-sizing: border-box; }
+        .hud-item { font-size: 1rem; font-weight: 700; color: #ddd; }
+        #timer { font-size: 1.3rem; font-weight: 900; color: var(--red); }
+        #timer.warning { color: #f1c40f; animation: pulse 0.5s infinite; }
+
+        .label-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; max-width: 800px; padding: 10px; box-sizing: border-box; background: rgba(255,255,255,0.03); border-radius: 15px; margin-bottom: 10px; }
+        .label-chip { padding: 8px 14px; background: transparent; border: 2px solid var(--red); color: var(--red); border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: 0.2s; text-transform: uppercase; user-select: none; }
+        .label-chip.selected { background: var(--red); color: white; box-shadow: 0 0 15px rgba(255,71,87,0.5); }
+        .label-chip.correct-fade { opacity: 0; pointer-events: none; transform: scale(0.9); }
+
+        /* ------------------------------------- */
+        /* --- AUTO-SCALING GAME BOARD (Fixes Issue 1) --- */
+        /* ------------------------------------- */
+        .board-container { 
+            position: relative; 
+            flex-grow: 1; /* Pure viewport bachega */
+            width: 100%; 
+            max-width: 800px; /* PC par size limited */
+            display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; /* Bahar nahi jayega */
+        }
+
+        #heart-viewport { 
+            position: relative; 
+            aspect-ratio: 9fb95e.png / 9fb95e.png; /* Correct Aspect Ratio of Original Image */
+            width: 100%; 
+            height: auto; 
+            max-height: 100%; /* Important for Responsive Vertical */
+            box-sizing: border-box;
+            background: white;
+            border-radius: 20px;
+            border: 4px solid #fff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            transition: 0.3s transform ease; /* Animation Juice */
+        }
+
+        #blank-heart { width: 100%; height: 100%; object-fit: contain; border-radius: 16px; }
+
+        /* Hotspots (PERCENTAGE BASED) */
+        .drop-target { position: absolute; border: 2px dashed rgba(231, 76, 60, 0.4); background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(2px); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(0,0,0,0.3); font-weight: 700; transition: 0.3s; text-align: center; box-sizing: border-box; text-transform: uppercase; }
+        .drop-target:hover { border-color: var(--red); background: rgba(255, 255, 255, 0.9); color: var(--red); }
+        .drop-target.filled { background: var(--green) !important; border: 2px solid #16a085 !important; color: white !important; font-size: 12px; font-weight: 900; }
+
+        /* Calibrated Coordinates based on image_9fb95e.png */
+        .z1 { top: 12%; left: 3%; width: 22%; height: 11%; }  /* Brachiocephalic vein */
+        .z2 { top: 46%; left: 3%; width: 21%; height: 10%; }  /* Right Atrium */
+        .z3 { top: 83%; left: 10%; width: 21%; height: 10%; } /* Left Atrium (Bottom) */
         .z4 { top: 15%; left: 74%; width: 22%; height: 9%; }  /* Pulmonary Truck */
-        .z5 { top: 36%; left: 74%; width: 20%; height: 9%; }  /* Left Atrium (Upper) */
-        .z6 { top: 62%; left: 74%; width: 20%; height: 9%; }  /* Left Ventricle */
-        .z7 { top: 84%; left: 74%; width: 22%; height: 9%; }  /* Top of the Heart */
+        .z5 { top: 38%; left: 74%; width: 21%; height: 9%; }  /* Left Atrium */
+        .z6 { top: 64%; left: 74%; width: 21%; height: 9%; }  /* Left Ventricle */
+        .z7 { top: 86%; left: 74%; width: 22%; height: 9%; }  /* Top of the Heart */
 
-        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-5px,0); } 75% { transform: translate(5px,0); } }
-        .shake { animation: shake 0.3s ease-in-out; }
+        /* Juicy Animations */
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .shake-element { animation: shake 0.3s ease-in-out; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); opacity: 0.7; } 100% { transform: scale(1); } }
+        
+        .score-val { font-size: 4rem; color: var(--green); font-weight: 900; margin: 15px 0; }
+        
     </style>
 </head>
 <body>
 
     <div id="scr-start" class="screen">
         <div class="glass-card">
-            <h1>HEART FLOW</h1>
-            <p style="color: #aaa;">Sahi labels ko unki jagah par fit karein.</p>
-            <p id="loading-text">Loading Assets...</p>
-            <button id="start-btn" class="btn" onclick="initGame()" disabled>START MISSION</button>
+            <h1>Heart Flow Mastery</h1>
+            <div class="instructions-list">
+                <div>1. Select a name from the top bar.</div>
+                <div>2. Tap/Click the correct empty box on the diagram.</div>
+                <div>⚠️ Time is limited! Mistake = Time reduction.</div>
+            </div>
+            <p id="loading-msg" style="color: #f1c40f;">System initializing...</p>
+            <img id="preload-img" src="heart_blank.png" style="display:none;" onload="enableStart()" onerror="handleImgError()">
+            <button id="btn-start" class="btn" onclick="initGame()" disabled>Enter The Core</button>
         </div>
     </div>
 
     <div id="scr-game" class="screen hidden">
         <div class="hud">
+            <div class="hud-item" style="color: var(--green);">Mastery: <span id="score">0</span> / 7</div>
             <div id="timer">01:00</div>
-            <div id="score">Mastery: 0/7</div>
         </div>
 
-        <div class="bank" id="bank">
-            <button class="chip" onclick="pick('l1', this)">Brachiocephalic Vein</button>
-            <button class="chip" onclick="pick('l2', this)">Right Atrium</button>
-            <button class="chip" onclick="pick('l3', this)">Left Atrium</button>
-            <button class="chip" onclick="pick('l4', this)">Pulmonary Truck</button>
-            <button class="chip" onclick="pick('l5', this)">Left Atrium</button>
-            <button class="chip" onclick="pick('l6', this)">Left Ventricle</button>
-            <button class="chip" onclick="pick('l7', this)">Top of the Heart</button>
+        <div class="label-bank" id="label-bank">
+            <button class="label-chip" id="l1" onclick="selLabel(this, 'l1')">The right brachiocephalic vein</button>
+            <button class="label-chip" id="l2" onclick="selLabel(this, 'l2')">Right Atrium</button>
+            <button class="label-chip" id="l3" onclick="selLabel(this, 'l3')">Left Atrium</button>
+            <button class="label-chip" id="l4" onclick="selLabel(this, 'l4')">Pulmonary Truck</button>
+            <button class="label-chip" id="l5" onclick="selLabel(this, 'l5')">Left Atrium</button>
+            <button class="label-chip" id="l6" onclick="selLabel(this, 'l6')">Left Ventricle</button>
+            <button class="label-chip" id="l7" onclick="selLabel(this, 'l7')">Top of the Heart</button>
         </div>
 
-        <div class="board-wrapper" id="board">
-            <img id="heart-img" src="heart_blank.png" onload="enableStart()">
-            
-            <div class="zone z1" onclick="check('l1', this)">DROP</div>
-            <div class="zone z2" onclick="check('l2', this)">DROP</div>
-            <div class="zone z3" onclick="check('l3', this)">DROP</div>
-            <div class="zone z4" onclick="check('l4', this)">DROP</div>
-            <div class="zone z5" onclick="check('l5', this)">DROP</div>
-            <div class="zone z6" onclick="check('l6', this)">DROP</div>
-            <div class="zone z7" onclick="check('l7', this)">DROP</div>
+        <div class="board-container">
+            <div id="heart-viewport">
+                <img id="blank-heart" src="heart_blank.png" alt="heart_blank.png missing">
+                
+                <div class="drop-target z1" data-id="l1" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z2" data-id="l2" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z3" data-id="l3" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z4" data-id="l4" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z5" data-id="l5" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z6" data-id="l6" onclick="checkMatch(this)">TARGET</div>
+                <div class="drop-target z7" data-id="l7" onclick="checkMatch(this)">TARGET</div>
+            </div>
         </div>
     </div>
 
     <div id="scr-end" class="screen hidden">
         <div class="glass-card">
-            <h2 id="res-title">MISSION OVER</h2>
-            <p id="res-msg"></p>
-            <button class="btn" onclick="location.reload()">TRY AGAIN</button>
+            <h2 id="end-title" style="text-transform: uppercase;">Cardiac Achievement</h2>
+            <div class="score-val" id="end-score">7/7</div>
+            <p id="end-message" style="color: #ccc; margin-bottom: 20px;"></p>
+            <button class="btn" onclick="location.reload()">Reboot System</button>
         </div>
     </div>
 
     <script>
-        let selectedId = null;
-        let selectedBtn = null;
-        let score = 0;
         let timeLeft = 60;
-        let timerActive = false;
-        let audioCtx = null;
+        let timerId = null;
+        let activeLabelId = null;
+        let activeLabelEl = null;
+        let score = 0;
+        const totalAnswers = 7;
+        let gameInitialized = false;
 
-        // Enable Start Button after image loads
+        // Image Checkers
         function enableStart() {
-            document.getElementById('start-btn').disabled = false;
-            document.getElementById('loading-text').innerText = "Assets Loaded!";
+            const startBtn = document.getElementById('btn-start');
+            startBtn.disabled = false;
+            document.getElementById('loading-msg').innerText = "System Ready. Go!";
+            document.getElementById('loading-msg').style.color = "var(--green)";
         }
 
-        // Sound System (Resume on click)
-        function playBeep(freq, type) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            osc.connect(g);
-            g.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.2);
+        function handleImgError() {
+            document.getElementById('loading-msg').innerText = "Diagram error! Visuals may be missing.";
+            document.getElementById('loading-msg').style.color = "var(--red)";
+            enableStart();
         }
 
         function initGame() {
-            // Mobile audio unlock
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            audioCtx.resume();
-
+            if(gameInitialized) return;
             document.getElementById('scr-start').classList.add('hidden');
             document.getElementById('scr-game').classList.remove('hidden');
-            timerActive = true;
+            gameInitialized = true;
             runTimer();
         }
 
         function runTimer() {
-            if(!timerActive) return;
-            const tEl = document.getElementById('timer');
-            let m = Math.floor(timeLeft/60);
-            let s = timeLeft%60;
-            tEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            const timerEl = document.getElementById('timer');
+            timerId = setInterval(() => {
+                timeLeft--;
+                
+                // Urgency Juice
+                if(timeLeft <= 10) timerEl.className = 'warning';
+
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) endGame(false);
+            }, 1000);
+        }
+
+        function selLabel(el, id) {
+            document.querySelectorAll('.label-chip').forEach(c => c.classList.remove('selected'));
+            activeLabelId = id;
+            activeLabelEl = el;
+            el.classList.add('selected');
+        }
+
+        function checkMatch(targetZone) {
+            const viewport = document.getElementById('heart-viewport');
             
-            if(timeLeft <= 0) { endGame(false); return; }
-            timeLeft--;
-            setTimeout(runTimer, 1000);
-        }
-
-        function pick(id, el) {
-            playBeep(400, 'sine');
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            selectedId = id;
-            selectedBtn = el;
-            el.classList.add('active');
-        }
-
-        function check(zoneId, box) {
-            if(!selectedId) {
-                document.getElementById('board').classList.add('shake');
-                setTimeout(() => document.getElementById('board').classList.remove('shake'), 300);
+            if(!activeLabelId) {
+                // Shake board if nothing selected (Game Juice)
+                viewport.classList.add('shake-element');
+                setTimeout(() => viewport.classList.remove('shake-element'), 300);
                 return;
             }
 
-            if(selectedId === zoneId) {
-                playBeep(800, 'sine');
-                box.classList.add('filled');
-                box.innerText = selectedBtn.innerText;
-                box.onclick = null;
-                selectedBtn.classList.add('done');
-                selectedId = null;
+            const targetLabelId = targetZone.getAttribute('data-id');
+
+            if(activeLabelId === targetLabelId) {
+                // Correct Match
+                targetZone.classList.add('filled');
+                targetZone.innerText = activeLabelEl.innerText;
+                targetZone.onclick = null; // Disable click
+                
+                activeLabelEl.classList.add('correct-fade'); // Hide chip from bank
+                activeLabelId = null;
                 score++;
-                document.getElementById('score').innerText = `Mastery: ${score}/7`;
-                if(score === 7) endGame(true);
+                document.getElementById('score').innerText = score;
+                
+                if(score === totalAnswers) endGame(true);
             } else {
-                playBeep(150, 'sawtooth');
-                timeLeft -= 5; // Time Penalty
-                box.classList.add('shake');
-                if(navigator.vibrate) navigator.vibrate(200);
-                setTimeout(() => box.classList.remove('shake'), 300);
+                // Wrong Match (Shake & Vibrate)
+                targetZone.classList.add('shake-element');
+                setTimeout(() => targetZone.classList.remove('shake-element'), 300);
+                if(navigator.vibrate) navigator.vibrate(200); // Mobile Haptic
+                timeLeft -= 5; // Penalty
             }
         }
 
-        function endGame(won) {
-            timerActive = false;
+        function endGame(isWin) {
+            clearInterval(timerId);
             document.getElementById('scr-game').classList.add('hidden');
             document.getElementById('scr-end').classList.remove('hidden');
             
-            const title = document.getElementById('res-title');
-            const msg = document.getElementById('res-msg');
+            const title = document.getElementById('end-title');
+            const scoreVal = document.getElementById('end-score');
+            const msg = document.getElementById('end-message');
             
-            if(won) {
+            if(isWin) {
                 title.innerText = "MISSION SUCCESS! 🏆";
-                title.style.color = "#2ecc71";
-                msg.innerText = `Aapne ${60 - timeLeft}s mein heart diagram master kar liya!`;
+                title.style.color = "var(--green)";
+                scoreVal.style.color = "var(--green)";
+                scoreVal.innerText = `${score}/7`;
+                msg.innerText = `Aapne Heart Anatomy master kar li with ${60 - timeLeft}s left!`;
             } else {
                 title.innerText = "TIME OUT! ⌛";
-                title.style.color = "#ff4757";
-                msg.innerText = `Koshish acchi thi. Score: ${score}/7. Dubara koshish karein.`;
+                title.style.color = "var(--red)";
+                scoreVal.style.color = "var(--red)";
+                scoreVal.innerText = `${score}/7`;
+                msg.innerText = `System failure. Training session reboot needed.`;
             }
         }
     </script>
