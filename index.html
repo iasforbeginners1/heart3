@@ -1,41 +1,30 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Heart Mastery | Production Edition</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;600;800&display=swap" rel="stylesheet">
-
+    <title>Human Heart Mastery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --red: #ff4757;
             --green: #2ecc71;
-            --dark-bg: #1e272e;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --blur: 10px;
-            --exo: 'Exo 2', sans-serif;
+            --dark: #1e272e;
         }
 
         body {
-            font-family: var(--exo);
-            background: var(--dark-bg);
-            background-image: linear-gradient(135deg, #1e272e 0%, #0a0e12 100%);
+            font-family: 'Exo 2', sans-serif;
+            background: var(--dark);
             color: white;
             margin: 0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation;
         }
 
-        /* ------------------------------------- */
-        /* --- SCREENS MANAGEMENT (UX Point) --- */
-        /* ------------------------------------- */
+        /* Screens */
         .screen {
             position: absolute;
             width: 100%;
@@ -44,428 +33,248 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--dark);
+            transition: 0.5s ease;
             z-index: 10;
         }
 
-        .screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.1) translateY(-20px);
-        }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.9); }
 
-        /* ------------------------------------- */
-        /* --- START SCREEN (UI Point) --- */
-        /* ------------------------------------- */
-        #start-screen {
-            background: url('assets/heart_blank.png') center/contain no-repeat, var(--dark-bg);
-            filter: blur(2px) grayscale(50%);
-            display: flex; flex-direction: column; 
-        }
-
-        #start-overlay {
-            position: absolute; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* Welcome UI */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-        }
-
-        #start-screen h1 {
-            font-weight: 800;
-            font-size: 4rem;
-            color: var(--red);
-            text-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
-            margin: 0;
-            letter-spacing: 2px;
-        }
-
-        .instructions {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(5px);
-            padding: 30px;
+            padding: 40px;
             border-radius: 20px;
-            max-width: 500px;
-            text-align: center;
-            margin: 40px 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
         }
 
-        .instructions h3 { color: white; margin-top: 0; }
-        .instructions p { color: #ccc; line-height: 1.6; }
+        h1 { font-size: 3rem; color: var(--red); margin: 0; text-shadow: 0 0 20px rgba(255,71,87,0.4); }
 
         .btn {
-            padding: 18px 50px;
-            font-size: 1.4rem;
-            background: transparent;
+            background: var(--red);
             color: white;
-            border: 2px solid var(--red);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             transition: 0.3s;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+            margin-top: 20px;
         }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,71,87,0.5); }
 
-        .btn:hover {
-            background: var(--red);
-            box-shadow: 0 0 25px rgba(255, 71, 87, 0.6);
-            transform: scale(1.05);
-        }
-
-        /* ------------------------------------- */
-        /* --- GAME UI (Glassmorphism UX Point) --- */
-        /* ------------------------------------- */
-        #game-screen {
-            padding: 20px;
-            box-sizing: border-box;
-            background: url('assets/heart_blank.png') center/contain no-repeat, var(--dark-bg);
-            background-blend-mode: soft-light;
-        }
-
+        /* Game HUD */
         .hud {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1000px;
-            background: rgba(0,0,0,0.5);
-            padding: 15px 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-sizing: border-box;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 30px;
+            border-radius: 50px;
         }
 
-        .stat-box { display: flex; flex-direction: column; align-items: center; }
-        .stat-label { font-size: 12px; color: #aaa; text-transform: uppercase; }
-        .stat-value { font-size: 24px; font-weight: 800; color: white; }
-        #timer.warning { color: #f1c40f; animation: pulse 1s infinite; }
-        #timer.critical { color: var(--red); animation: shake 0.3s infinite; }
-
-        .label-bank {
+        /* Label Bank */
+        .bank {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 15px;
-            width: 100%;
-            max-width: 1000px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255,255,255,0.05);
             margin-bottom: 20px;
+            max-width: 900px;
         }
 
-        .label-chip {
-            padding: 10px 18px;
-            background: transparent;
+        .chip {
+            padding: 10px 20px;
             border: 2px solid var(--red);
             color: var(--red);
-            border-radius: 50px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            user-select: none;
+            font-weight: bold;
+            transition: 0.2s;
+            background: transparent;
         }
 
-        .label-chip.selected {
-            background: var(--red);
-            color: white;
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
-            transform: scale(1.1);
-        }
+        .chip.selected { background: var(--red); color: white; transform: translateY(-5px); }
+        .chip.correct-fade { opacity: 0; pointer-events: none; transform: scale(0.8); }
 
-        .label-chip.hidden {
-            opacity: 0; pointer-events: none; transform: scale(0.9);
-        }
-
-        /* ------------------------------------- */
-        /* --- VIEWPORT & DROPS (Visual Point) --- */
-        /* ------------------------------------- */
-        .game-viewport {
+        /* Board */
+        .board {
             position: relative;
-            width: 1000px; height: 750px; /* Matches Original Image size */
-            background-image: url('assets/heart_blank.png');
-            background-size: contain; background-position: center; background-repeat: no-repeat;
-            border-radius: 20px;
-            border: 4px solid white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            display: flex; justify-content: center; align-items: center;
+            width: 800px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 5px solid white;
         }
 
-        .drop-target {
+        #heart-img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Drop Zones (Based on your image image_9fb95e.png) */
+        .target {
             position: absolute;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
-            border-radius: 8px;
+            border: 2px dashed #ccc;
+            background: rgba(255,255,255,0.7);
+            border-radius: 5px;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 13px; font-weight: 600; color: transparent; text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            color: #666;
             transition: 0.3s;
-        }
-
-        .drop-target:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border-color: var(--red); }
-        
-        .drop-target.correct {
-            background: rgba(46, 204, 113, 0.15) !important;
-            border: 2px solid var(--green) !important;
-            color: var(--green) !important;
-            border-style: solid;
-            font-weight: 800;
             text-align: center;
         }
 
-        /* Coordinates (Approximate - need visual testing on image_a01ad4.png) */
-        /* Note: Left Atrium has two targets pointing to same label logic */
-        .t1 { top: 380px; left: 100px; width: 200px; height: 60px; } /* Right Atrium */
-        .t2 { top: 200px; left: 80px; width: 230px; height: 80px; }  /* Right Brachiocephalic vein */
-        .t3 { top: 615px; left: 180px; width: 200px; height: 50px; } /* Left Atrium (Bottom) */
-        .t4 { top: 235px; left: 740px; width: 180px; height: 40px; } /* Pulmonary Truck */
-        .t5 { top: 345px; left: 740px; width: 180px; height: 40px; } /* Left Atrium (Main) */
-        .t6 { top: 485px; left: 740px; width: 180px; height: 40px; } /* Left Ventricle */
-        .t7 { top: 585px; left: 740px; width: 180px; height: 40px; } /* Top of the Heart */
+        .target:hover { border-color: var(--red); background: white; }
+        .target.correct { 
+            background: var(--green) !important; 
+            border: 2px solid #16a085 !important; 
+            color: white !important; 
+            font-size: 13px;
+        }
 
-        /* ------------------------------------- */
-        /* --- END SCREEN & FEEDBACK (UX Point) --- */
-        /* ------------------------------------- */
-        #end-screen h1 { font-size: 4rem; text-transform: uppercase; font-weight: 800; }
-        .score-info { background: rgba(0,0,0,0.5); padding: 30px; border-radius: 20px; text-align: center; margin: 30px 0; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .final-score { font-size: 4rem; font-weight: 800; color: var(--green); margin: 0; }
-        .win-title { color: var(--green); text-shadow: 0 0 20px rgba(46, 204, 113, 0.5); }
-        .lose-title { color: var(--red); text-shadow: 0 0 20px rgba(255, 71, 87, 0.5); }
+        /* Coordinates (Proportional %) */
+        .t1 { top: 21%; left: 5%; width: 22%; height: 10%; } /* Brachiocephalic vein */
+        .t2 { top: 46%; left: 3%; width: 20%; height: 8%; }  /* Right Atrium */
+        .t3 { top: 78%; left: 10%; width: 21%; height: 8%; } /* Left Atrium (Bottom) */
+        .t4 { top: 18%; left: 72%; width: 22%; height: 8%; } /* Pulmonary Truck */
+        .t5 { top: 35%; left: 72%; width: 20%; height: 8%; } /* Left Atrium (Top) */
+        .t6 { top: 60%; left: 72%; width: 20%; height: 8%; } /* Left Ventricle */
+        .t7 { top: 80%; left: 72%; width: 22%; height: 8%; } /* Top of heart */
 
-        /* ------------------------------------- */
-        /* --- ANIMATIONS & "JUICE" (Key Point) --- */
-        /* ------------------------------------- */
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 10% { transform: translate(-1px, -1px); } 20% { transform: translate(-2px, 0px); } 30% { transform: translate(1px, 2px); } 100% { transform: translate(1px, 1px); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); } }
-        @keyframes confetti { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(50px) rotate(360deg); } }
-
-        .confetti-particle { position: absolute; width: 10px; height: 10px; background: var(--green); border-radius: 2px; animation: confetti 1s ease-out forwards; z-index: 100; }
-        .shake-element { animation: shake 0.3s; }
+        /* Juicy Animations */
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .shake { animation: shake 0.2s ease-in-out 0s 2; }
 
     </style>
 </head>
 <body>
 
-    <audio id="snd-correct" src="assets/correct.mp3"></audio>
-    <audio id="snd-wrong" src="assets/wrong.mp3"></audio>
-    <audio id="snd-bg" src="assets/bg_music.mp3" loop volume="0.3"></audio>
-
-    <div id="start-screen" class="screen">
-        <div id="start-overlay">
-            <h1>Heart Flow Mastery</h1>
-            <div class="instructions">
-                <h3>Instructions</h3>
-                <p>1. Upar ke 'Label Bank' se ek naam select karein (Click/Tap).</p>
-                <p>2. Diagram par sahi blank box ko click karein.</p>
-                <p>3. Aapke paas sirf <b>1 Minute</b> hai! Galti par Time minus hoga.</p>
-            </div>
-            <button class="btn" onclick="initGame()">Enter The Core</button>
+    <div id="scr-start" class="screen">
+        <div class="glass-panel">
+            <h1>HUMAN HEART</h1>
+            <p>1. Pick a label from the top.<br>2. Click the matching box on the diagram.<br>3. Complete within 1 minute!</p>
+            <button class="btn" onclick="startGame()">START MISSION</button>
         </div>
     </div>
 
-    <div id="game-screen" class="screen hidden">
+    <div id="scr-game" class="screen hidden">
         <div class="hud">
-            <div class="stat-box">
-                <span class="stat-label">Timer</span>
-                <span class="stat-value" id="timer">01:00</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-label">System Message</span>
-                <span class="stat-value" id="game-status" style="font-size:16px;">Initiating...</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-label">Mastery Score</span>
-                <span class="stat-value" id="score">0 / 6</span>
-            </div>
+            <div id="timer">Time: 60s</div>
+            <div id="score">Score: 0/7</div>
         </div>
 
-        <div class="label-bank" id="label-bank">
-            <div class="label-chip" id="l1" onclick="selLabel(this, 'l1')">Right Atrium</div>
-            <div class="label-chip" id="l2" onclick="selLabel(this, 'l2')">Brachiocephalic Vein</div>
-            <div class="label-chip" id="l3" onclick="selLabel(this, 'l3')">Left Atrium</div>
-            <div class="label-chip" id="l4" onclick="selLabel(this, 'l4')">Pulmonary Truck</div>
-            <div class="label-chip" id="l6" onclick="selLabel(this, 'l6')">Left Ventricle</div>
-            <div class="label-chip" id="l7" onclick="selLabel(this, 'l7')">Top of the Heart</div>
+        <div class="bank" id="label-bank">
+            <button class="chip" id="l1" onclick="selectLabel(this, 'l1')">Brachiocephalic Vein</button>
+            <button class="chip" id="l2" onclick="selectLabel(this, 'l2')">Right Atrium</button>
+            <button class="chip" id="l3" onclick="selectLabel(this, 'l3')">Left Atrium</button>
+            <button class="chip" id="l4" onclick="selectLabel(this, 'l4')">Pulmonary Truck</button>
+            <button class="chip" id="l5" onclick="selectLabel(this, 'l5')">Left Atrium</button>
+            <button class="chip" id="l6" onclick="selectLabel(this, 'l6')">Left Ventricle</button>
+            <button class="chip" id="l7" onclick="selectLabel(this, 'l7')">Top of the Heart</button>
         </div>
 
-        <div class="game-viewport">
-            <img id="heart-img-blank" src="assets/heart_blank.png" alt="Heart Diagram Blank">
+        <div class="board" id="game-board">
+            <img id="heart-img" src="heart_blank.png" alt="Heart Diagram Blank">
             
-            <div class="drop-target t1" data-id="l1" onclick="checkDrop(this)">DROP TARGET</div>
-            <div class="drop-target t2" data-id="l2" onclick="checkDrop(this)">DROP TARGET</div>
-            <div class="drop-target t3" data-id="l3" onclick="checkDrop(this)">DROP TARGET</div>
-            <div class="drop-target t4" data-id="l4" onclick="checkDrop(this)">DROP TARGET</div>
-            <div class="drop-target t5" data-id="l3" onclick="checkDrop(this)">DROP TARGET</div> <div class="drop-target t6" data-id="l6" onclick="checkDrop(this)">DROP TARGET</div>
-            <div class="drop-target t7" data-id="l7" onclick="checkDrop(this)">DROP TARGET</div>
+            <div class="target t1" onclick="verify('l1', this)">DROP HERE</div>
+            <div class="target t2" onclick="verify('l2', this)">DROP HERE</div>
+            <div class="target t3" onclick="verify('l3', this)">DROP HERE</div>
+            <div class="target t4" onclick="verify('l4', this)">DROP HERE</div>
+            <div class="target t5" onclick="verify('l5', this)">DROP HERE</div>
+            <div class="target t6" onclick="verify('l6', this)">DROP HERE</div>
+            <div class="target t7" onclick="verify('l7', this)">DROP HERE</div>
         </div>
     </div>
 
-    <div id="end-screen" class="screen hidden">
-        <h1 id="end-title" class="lose-title">MISSION COMPLETED?</h1>
-        <div class="score-info">
-            <h3>Final Score</h3>
-            <p class="final-score" id="final-score-val">0 / 6</p>
-            <p id="end-message">System failure.</p>
+    <div id="scr-end" class="screen hidden">
+        <div class="glass-panel">
+            <h2 id="end-title">Game Over</h2>
+            <p id="end-msg"></p>
+            <button class="btn" onclick="location.reload()">TRY AGAIN</button>
         </div>
-        <button class="btn" onclick="location.reload()">Reset System</button>
     </div>
 
     <script>
-        let timeLeft = 60;
-        let timerInterval = null;
-        let selectedLabelId = null;
-        let selectedElement = null;
+        let selectedId = null;
+        let selectedBtn = null;
         let score = 0;
-        const totalItems = 6;
-        const hapticSupport = 'vibrate' in navigator;
+        let timeLeft = 60;
+        let timer = null;
 
-        // Sounds (UX Point)
-        const sndCorrect = document.getElementById('snd-correct');
-        const sndWrong = document.getElementById('snd-wrong');
-        const sndBg = document.getElementById('snd-bg');
-
-        // Shuffling the label bank for "Replayability"
-        function shuffleLabels() {
-            const bank = document.getElementById('label-bank');
-            for (let i = bank.children.length; i >= 0; i--) {
-                bank.appendChild(bank.children[Math.random() * i | 0]);
-            }
-        }
-
-        function initGame() {
-            shuffleLabels();
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            startTimer();
-            // Try playing background music (browsers need user interaction)
-            sndBg.play().catch(e => console.log("BGM needs interaction"));
-        }
-
-        function startTimer() {
-            const timerEl = document.getElementById('timer');
-            timerInterval = setInterval(() => {
+        function startGame() {
+            document.getElementById('scr-start').classList.add('hidden');
+            document.getElementById('scr-game').classList.remove('hidden');
+            
+            timer = setInterval(() => {
                 timeLeft--;
-                
-                // Audio Clues (Timer Urgency)
-                if(timeLeft <= 10) { timerEl.className = 'stat-value critical'; }
-                else if(timeLeft <= 30) { timerEl.className = 'stat-value warning'; }
-
-                let mins = Math.floor(timeLeft / 60);
-                let secs = timeLeft % 60;
-                timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) endGame(false);
+                document.getElementById('timer').innerText = `Time: ${timeLeft}s`;
+                if(timeLeft <= 0) endGame(false);
             }, 1000);
         }
 
-        function selLabel(el, id) {
-            // Remove previous selections
-            document.querySelectorAll('.label-chip').forEach(l => l.classList.remove('selected'));
-            // Select new
-            selectedLabelId = id;
-            selectedElement = el;
-            el.classList.add('selected');
-            msg("Target the correct part!", "#f1c40f");
+        function selectLabel(btn, id) {
+            // Reset all chips
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            // Set current
+            selectedId = id;
+            selectedBtn = btn;
+            btn.classList.add('selected');
         }
 
-        function checkDrop(box) {
-            if(!selectedLabelId) {
-                msg("Pick a structure first!", var(--red));
-                // UX: Shake target boxes to show priority
-                document.querySelectorAll('.drop-target').forEach(t => t.classList.add('shake-element'));
-                setTimeout(() => document.querySelectorAll('.drop-target').forEach(t => t.classList.remove('shake-element')), 300);
+        function verify(targetId, box) {
+            if(!selectedId) {
+                // Shake board if nothing selected
+                document.getElementById('game-board').classList.add('shake');
+                setTimeout(() => document.getElementById('game-board').classList.remove('shake'), 400);
                 return;
             }
 
-            const matchId = box.getAttribute('data-id');
-            if(selectedLabelId === matchId) {
-                // Sahi Jawab Logic
+            if(selectedId === targetId) {
+                // Correct Match
                 box.classList.add('correct');
-                box.innerText = selectedElement.innerText;
-                box.onclick = null; // Disable click
-                selectedElement.classList.add('hidden'); // Smooth hide from bank
-                selectedLabelId = null;
+                box.innerText = selectedBtn.innerText;
+                box.onclick = null; // Disable future clicks
+                
+                selectedBtn.classList.add('correct-fade');
+                selectedId = null;
                 score++;
+                document.getElementById('score').innerText = `Score: ${score}/7`;
                 
-                // Correct Sound & Particles (JUICE Point)
-                sndCorrect.currentTime = 0; sndCorrect.play();
-                createConfetti(box);
-                
-                msg("System match! Analyzing...", var(--green));
-                document.getElementById('score').innerText = `${score} / 6`;
-                
-                if(score === totalItems) endGame(true);
+                if(score === 7) endGame(true);
             } else {
-                // Galat Jawab Logic
-                timeLeft -= 5; // Penalty
-                sndWrong.currentTime = 0; sndWrong.play();
+                // Wrong Match (Shake box and Vibrate)
+                box.classList.add('shake');
+                setTimeout(() => box.classList.remove('shake'), 400);
+                if(navigator.vibrate) navigator.vibrate(200);
                 
-                // Haptic Feedback & Visual Shake (MEMORIZED Points)
-                if(hapticSupport) navigator.vibrate(200); 
-                box.classList.add('shake-element');
-                document.getElementById('hud').classList.add('shake-element');
-                
-                setTimeout(() => {
-                    box.classList.remove('shake-element');
-                    document.getElementById('hud').classList.remove('shake-element');
-                }, 300);
-
-                msg("ERROR: Integrity mismatch. T-Minus 5s", var(--red));
+                // Penalty
+                timeLeft -= 5;
             }
         }
 
-        function msg(t, c) {
-            const m = document.getElementById('game-status');
-            m.innerText = t;
-            m.style.color = c;
-        }
-
-        // Particle System (JUICE Point)
-        function createConfetti(box) {
-            const rect = box.getBoundingClientRect();
-            for(let i=0; i<15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'confetti-particle';
-                particle.style.background = var(--green);
-                particle.style.left = Math.random() * rect.width + 'px';
-                particle.style.top = Math.random() * rect.height + 'px';
-                particle.style.transform = `rotate(${Math.random()*360}deg)`;
-                box.appendChild(particle);
-                setTimeout(() => particle.remove(), 1000);
-            }
-        }
-
-        function endGame(isWin) {
-            clearInterval(timerInterval);
-            sndBg.pause();
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('end-screen').classList.remove('hidden');
+        function endGame(won) {
+            clearInterval(timer);
+            document.getElementById('scr-game').classList.add('hidden');
+            document.getElementById('scr-end').classList.remove('hidden');
             
             const title = document.getElementById('end-title');
-            const msg = document.getElementById('end-message');
-            document.getElementById('final-score-val').innerText = `${score} / 6`;
+            const msg = document.getElementById('end-msg');
             
-            if(isWin) {
-                title.innerText = "Cardiac Achieved!🏆";
-                title.className = "win-title";
-                document.getElementById('final-score-val').style.color = var(--green);
-                msg.innerText = `Shaandaar! Aapne Mastery level ${60 - timeLeft} seconds mein complete kiya!`;
+            if(won) {
+                title.innerText = "YOU WON! 🏆";
+                title.style.color = "#2ecc71";
+                msg.innerText = `Shaandaar! Aapne heart anatomy seekh li with ${timeLeft}s left!`;
             } else {
-                title.innerText = "System Failure!⌛";
-                title.className = "lose-title";
-                document.getElementById('final-score-val').style.color = var(--red);
-                msg.innerText = `Time Up! Only ${score} systems were functional. Reboot and try again.`;
+                title.innerText = "TIME UP! ⌛";
+                title.style.color = "#ff4757";
+                msg.innerText = `Koshish acchi thi, par timer khatam ho gaya. Score: ${score}/7`;
             }
         }
     </script>
